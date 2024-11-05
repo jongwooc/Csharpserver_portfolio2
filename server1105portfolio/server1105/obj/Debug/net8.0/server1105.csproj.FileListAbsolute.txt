@@ -1,0 +1,15 @@
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\bin\Debug\net8.0\server1105.exe
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\bin\Debug\net8.0\server1105.deps.json
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\bin\Debug\net8.0\server1105.runtimeconfig.json
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\bin\Debug\net8.0\server1105.dll
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\bin\Debug\net8.0\server1105.pdb
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\obj\Debug\net8.0\server1105.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\obj\Debug\net8.0\server1105.AssemblyInfoInputs.cache
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\obj\Debug\net8.0\server1105.AssemblyInfo.cs
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\obj\Debug\net8.0\server1105.csproj.CoreCompileInputs.cache
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\obj\Debug\net8.0\server1105.sourcelink.json
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\obj\Debug\net8.0\server1105.dll
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\obj\Debug\net8.0\refint\server1105.dll
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\obj\Debug\net8.0\server1105.pdb
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\obj\Debug\net8.0\server1105.genruntimeconfig.cache
+C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\server1105\obj\Debug\net8.0\ref\server1105.dll

@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "cmFl8HAP4CE=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\박송이\\source\\repos\\jongwooc\\Csharpserver_portfolio2\\server1105portfolio\\server1105\\server1105.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\박송이\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.21.0\\microsoft.visualstudio.azure.containers.tools.targets.1.21.0.nupkg.sha512"
+  ],
+  "logs": []
+}
