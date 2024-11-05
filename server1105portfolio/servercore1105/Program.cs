@@ -1,175 +1,85 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 
 namespace servercore1105
 {
-    class SpinLockTest
+    class Program
     {
-        private enum lock_check
-        {
-            expected,
-            desired
-        }
+        /*
+        스레드 로컬 스토리지 테스트 주석처리 
+        static ThreadLocal<string> Threadname = new ThreadLocal<string>();
 
-        volatile int _locked = 0;
-
-        public void Acquire()
-        {
-            while (true)
-            {
-                int lock_condition = Interlocked.Exchange(ref _locked, 1);
-                if (lock_condition == 0)
-                {
-                    break;
-                }
-            }
-        }
-
-        public void CompareAcquire()
-        {
-            while (true)
-            {
-                int lock_condition = Interlocked.CompareExchange(ref _locked, (int)lock_check.desired, (int)lock_check.expected);
-                if (lock_condition == 0)
-                {
-                    break;
-                }
-            }
-        }
-        public void Release()
-        {
-            _locked = 0;
-        }
-
-    }
-
-    class SwitchLockTest
-    {
-
-        volatile int _locked = 0;
-        public void CompareAcquire()
-        {
-            while (true)
-            {
-                if (Interlocked.CompareExchange(ref _locked, 1, 0) == 0)
-                {
-                    break;
-                }
-                Thread.Sleep(1);    //무조건 컨텍스트 스위치
-                //Thread.Sleep(0); 우선순위가 같거나 높을 때만 컨텍스트 스위치
-                //Thread.Yield(); 우선순위와 무관하게 컨텍스트 스위치
-
-            }
-        }
-        public void Release()
-        {
-            _locked = 0;
-        }
-    }
-    class AutoResetLockTest
-    {
-        AutoResetEvent _lock = new AutoResetEvent(true);
-        public void Acquire()
+        static void ThreadLocal_Learning()
         {
 
+            Threadname.Value = $"Thread Learning test. Thread value is {Thread.CurrentThread.ManagedThreadId}";
+            Thread.Sleep(1000);
+            Console.WriteLine(Threadname.Value);
         }
-
-        public int Release()
-        {
-        }
-    }
-        class Program
-    {
-        //C#의 볼리타일은 특이해서 가능하면 쓰지 않는 것이 좋다.
-        //volatile static bool _thread_share = false;
-        static int multiThreadingLearning = 0;
-        static object monitorobj = new object();
-
-        static void MainThread(object? state)
-        {
-            while (true)
-            {
-                Console.WriteLine("Thread Test");
-
-
-                //메모리 배리어
-                //코드 재배치 억제 및 가시성 증가
-                //------------------------
-                //연습 결과 함수 내에서만 동작가능
-                //Full memory barrier  = Assembly MFENCE, C# Thread.MemoryBarrier()
-                //Store memory barrier = Assembly SFENCE
-                //Load memory barrier  = Assembly LFENCE
-                Thread.MemoryBarrier();
-                //openCL의 flush()랑 유사한듯
-                Thread.Sleep(1000);
-
-                //interlocked는 원자성 보장 하지만 성능 저하
-                Interlocked.Increment(ref multiThreadingLearning);
-            }
-        }
-
-        static void Thread2(object? state)
-        {
-            while (true)
-            {
-                Console.WriteLine("Thread 2 Test");
-
-
-
-            }
-        }
-        static void Thread_Monitor(object? state)
-        {
-            while (true)
-            {
-                //=CriticalSection, std::mutex();
-                //try, (catch), finally를 쓰면 데드락 방지 가능, 
-                try
-                {
-                    Monitor.Enter(monitorobj);
-                    {
-                        Console.WriteLine("Thread Monitor Test");
-                        multiThreadingLearning--;
-                    }
-                }
-                finally
-                {
-                    Monitor.Exit(monitorobj);
-                }
-            }
-        }
-        static void Thread_lock(object? state)
-        {
-            while (true)
-            {
-                //=lock() = try,finally, monitor를 내부적으로 구현
-                lock (monitorobj)
-                {
-                    Console.WriteLine("Thread lock Test");
-                    multiThreadingLearning--;
-                }
-            }
-        }
-
-
+        */
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            //스레드 연습 한 것은 주석처리
+            /*
             ThreadPool.SetMinThreads(1, 1);
             ThreadPool.SetMaxThreads(5, 5);
-
+            static Mutex _MutexLock = new Mutex;
+            _MutexLock.WaitOne();
+            _MutexLock.ReleaseMutex();
             Thread test001 = new Thread(MainThread);
-            //test001.IsBackground = true;
-            //test001.Start();
-            //test001.Join();
-            //ThreadPool.QueueUserWorkItem(MainThread);
-            //Task testtask001 = new Task(() => { while (true); { } },TaskCreationOptions.LongRunning);
-
-
+            test001.IsBackground = true;
+            test001.Start();
+            test001.Join();
+            ThreadPool.QueueUserWorkItem(MainThread);
+            Task testtask001 = new Task(() => { while (true); { } },TaskCreationOptions.LongRunning);
             Console.WriteLine("Thread test end");
+            Parallel.Invoke(ThreadLocal_Learning, ThreadLocal_Learning, ThreadLocal_Learning, ThreadLocal_Learning);
+            */
+            string host = Dns.GetHostName();
+            IPHostEntry ipHost = Dns.GetHostEntry(host);
+            IPAddress ipAddress = ipHost.AddressList[0];
+            IPEndPoint endPoint = new IPEndPoint(ipAddress, 7890);
 
+            // listener소켓 생성
+            Socket listenerSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+            //서버와 클라이언트의 연결은 언제나 위험이 있기 때문에 try-catch로 대비한다.
+            try
+            {
+                //소켓 고정
+                listenerSocket.Bind(endPoint);
+                //서버 대기 시작 +최대 대기수
+                listenerSocket.Listen(10);
+                //서버의 무한 대기
+                while (true)
+                {
+                    Console.WriteLine("listen test");
+                    //클라 소켓을 리스너랑 연결
+                    Socket clientSocket = listenerSocket.Accept();
+                    //연결된 소켓에서 데이터를 받는다
+                    byte[] recievedBuffer = new byte[1024];
+                    int recievedBytes = clientSocket.Receive(recievedBuffer);
+                    string recievedData = Encoding.UTF8.GetString(recievedBuffer, 0, recievedBytes);
+                    Console.WriteLine($"received {recievedData}");
+                    //데이터를 보내본다
+                    byte[] sendBuffer = Encoding.UTF8.GetBytes("서버오픈 데이터 전송 테스트");
+                    Console.WriteLine("클라이언트에게 테스트 데이터 전송");
+                    clientSocket.Send(sendBuffer);
+                    //연결종료 직전에 리슨과 센드를 모두 종료한다 
+                    clientSocket.Shutdown(SocketShutdown.Both);
+                    //리슨과 샌드를 모두 종료후 실제 연결을 종료한다
+                    clientSocket.Close();
+                }
+            }
+            catch (Exception occuredException)
+            {
+                Console.WriteLine(occuredException.ToString());
+            }
         }
     }
 }
