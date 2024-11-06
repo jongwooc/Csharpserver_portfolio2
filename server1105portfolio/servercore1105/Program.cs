@@ -7,6 +7,31 @@ using System.Text;
 
 namespace servercore1105
 {
+    class GameSession : Session
+    {
+        public override void OnConnected(EndPoint clientEndPoint)
+        {
+            Console.WriteLine($"GameSession OnConnected from = {clientEndPoint}");
+            byte[] sendBuffer = Encoding.UTF8.GetBytes("서버오픈 데이터 전송 테스트");
+
+            Send(sendBuffer);
+            Thread.Sleep(1000);
+            Disconnect();
+        }
+        public override void OnDisconnected(EndPoint clientEndPoint)
+        {
+            Console.WriteLine($"GameSession OnDisconnected from = {clientEndPoint}");
+        }
+        public override void OnReceived(ArraySegment<byte> receivedBufferArraySegment) 
+        {
+            string recievedData = Encoding.UTF8.GetString(receivedBufferArraySegment.Array, receivedBufferArraySegment.Offset, receivedBufferArraySegment.Count);
+            Console.WriteLine($"GameSession OnReceived data string {recievedData}");
+        }
+        public override void OnSending(int sendingBytesTransferredInt)
+        {
+            Console.WriteLine($"GameSession OnSending Transferred bytes = {sendingBytesTransferredInt}");
+        }
+    }
     class Program
     {
         /*
@@ -22,29 +47,6 @@ namespace servercore1105
         }
         */
         static Listener _listener = new Listener();
-        static void actionAtAccept (Socket clientSocket)
-        {
-            try
-            {                
-                Session _session = new Session();
-                _session.Init(clientSocket);
-
-                byte[] sendBuffer = Encoding.UTF8.GetBytes("서버오픈 데이터 전송 테스트");
-                Console.WriteLine("클라이언트에게 테스트 데이터 전송");
-
-                _session.Send(sendBuffer);
-
-                Thread.Sleep(1000);
-
-                _session.Disconnect();
-
-            }
-            catch (Exception occuredException)
-            {
-                Console.WriteLine(occuredException.ToString());
-            }
-
-        }
 
         static void Main(string[] args)
         {
@@ -72,7 +74,7 @@ namespace servercore1105
             //서버와 클라이언트의 연결은 언제나 위험이 있기 때문에 try-catch로 대비한다.
 
             //리스너 생성 및 설정
-            _listener.Init(endPoint,actionAtAccept);
+            _listener.Init(endPoint, () => { return new GameSession(); });
             Console.WriteLine("listening 대기 중");
 
             //서버의 무한 대기

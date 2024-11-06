@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace servercore1105
 {
-    internal class Session
+    abstract class Session
     {
 
         #region 이니셜라이즈
@@ -22,6 +23,15 @@ namespace servercore1105
 
         SocketAsyncEventArgs _sendingArgs = new SocketAsyncEventArgs();
         SocketAsyncEventArgs _receivedArgs = new SocketAsyncEventArgs();
+
+
+        //세션을 상속받거나 외부에서 사용할 인터페이스 추가
+        public abstract void OnConnected(EndPoint clientEndPoint);
+        public abstract void OnReceived(ArraySegment<byte> receivedBufferArraySegment);
+        public abstract void OnSending(int sendingBytesTransferredInt);
+        public abstract void OnDisconnected(EndPoint clientEndPoint);
+
+
 
         public void Init(Socket incomingSocket)
         {
@@ -55,12 +65,9 @@ namespace servercore1105
         {
             if (_receivedArgs.BytesTransferred > 0 && _receivedArgs.SocketError == SocketError.Success)
             {
-                //추가 작업 필요
                 try
                 {
-                    //리시브시 할일
-                    string recievedData = Encoding.UTF8.GetString(_receivedArgs.Buffer, _receivedArgs.Offset, _receivedArgs.BytesTransferred);
-                    Console.WriteLine($"received {recievedData}");
+                    OnReceived(new ArraySegment<byte>(_receivedArgs.Buffer, _receivedArgs.Offset, _receivedArgs.BytesTransferred));
                     RegisterReceive();
                 }
                 catch (Exception ex)
@@ -124,7 +131,7 @@ namespace servercore1105
                     {
                         _sendingArgs.BufferList = null;
                         _pendingBufferList.Clear();
-                        Console.WriteLine($"Transferred bytes = {_sendingArgs.BytesTransferred}");
+                        OnSending(_sendingArgs.BytesTransferred);
 
                         if (_sendingQueue.Count > 0)
                         {
@@ -156,6 +163,8 @@ namespace servercore1105
             {
                 return;
             }
+
+            OnDisconnected(_sessionSocket.RemoteEndPoint);
             //연결종료 직전에 리슨과 센드를 모두 종료한다 
             _sessionSocket.Shutdown(SocketShutdown.Both);
             //리슨과 샌드를 모두 종료후 실제 연결을 종료한다

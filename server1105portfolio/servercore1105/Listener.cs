@@ -12,14 +12,14 @@ namespace servercore1105
     internal class Listener
     {
         Socket _listenerSocket;
-        Action<Socket> _actionAtAccpet;
+        Func<Session> _sessionFactory;
 
-        public void Init(IPEndPoint _endpoint,Action<Socket> actionAtAccept)
+        public void Init(IPEndPoint _endpoint, Func<Session> _sessionFactory)
         {
             // listener소켓 생성
             _listenerSocket = new Socket(_endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             //내부 변수 액션에 원하는 작업을 받아 넣는다.
-            _actionAtAccpet += actionAtAccept;
+            _sessionFactory += _sessionFactory;
             //소켓 고정
             _listenerSocket.Bind(_endpoint);
             //서버 대기 시작 +최대 대기수
@@ -32,6 +32,7 @@ namespace servercore1105
             //비동기적 이벤트 콜백함수로 등록
             SocketAsyncEventArgs _Args1 = new SocketAsyncEventArgs();
             _Args1.Completed += new EventHandler<SocketAsyncEventArgs>(AcceptCompleted);
+
             RegisterAccept(_Args1);
 
         }
@@ -43,8 +44,9 @@ namespace servercore1105
         {
             //기존 자료는 삭제한다.
             _AsyncArgus.AcceptSocket = null;
-
-            bool pending = _listenerSocket.AcceptAsync(_AsyncArgus);
+            bool pending = false;
+            pending = _listenerSocket.AcceptAsync(_AsyncArgus);
+            //다른 곳 보다 여기에서 펜딩이 안 걸릴 때가 많다.. 이유가 뭘까 
             if (pending == false)
             {
                 AcceptCompleted(null,_AsyncArgus);
@@ -55,8 +57,10 @@ namespace servercore1105
         {
             if (_Args1.SocketError == SocketError.Success)
             {
-                //TODO: 엑셉트가 성공되면 뭔가 한다
-                _actionAtAccpet.Invoke(_Args1.AcceptSocket);
+                //나머지는 대충 이해가 되는데 세션 팩토리는 정의 한 적이 없는데 어떻게 인보크가 가능할까?
+                Session _session = _sessionFactory.Invoke();
+                _session.Init(_Args1.AcceptSocket);
+                _session.OnConnected(_Args1.AcceptSocket.RemoteEndPoint);
             }   
             else
             {
