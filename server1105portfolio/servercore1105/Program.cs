@@ -32,7 +32,7 @@ namespace servercore1105
                 byte[] sendBuffer = Encoding.UTF8.GetBytes("서버오픈 데이터 전송 테스트");
                 Console.WriteLine("클라이언트에게 테스트 데이터 전송");
 
-                _session.send(sendBuffer);
+                _session.Send(sendBuffer);
 
                 Thread.Sleep(1000);
 

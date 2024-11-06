@@ -13,7 +13,13 @@ namespace servercore1105
         #region 이니셜라이즈
 
         Socket _sessionSocket;
-        volatile int _disconnectedCondition = 0; 
+        volatile int _disconnectedCondition = 0;
+
+        Queue<byte[]> _sendingQueue = new Queue<byte[]>();
+        bool _pending = false;
+        SocketAsyncEventArgs _sendingArgs = new SocketAsyncEventArgs();
+        object _customlock = new object();
+
         public void Init(Socket incomingSocket)
         {
             _sessionSocket = incomingSocket;
@@ -21,8 +27,10 @@ namespace servercore1105
             receivedArgs.Completed += new EventHandler<SocketAsyncEventArgs>(ReceiveCompleted);
             //추가로 뭔가를 하고 싶을 때
             //receivedArgs.UserToken = null;
-
             receivedArgs.SetBuffer(new byte[1024], 0, 1024);
+
+            _sendingArgs.Completed += new EventHandler<SocketAsyncEventArgs>(SendCompleted);
+
             RegisterReceive(receivedArgs);
         }
 
@@ -54,24 +62,82 @@ namespace servercore1105
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"failed with error {ex}");
+                    Console.WriteLine($"recieve completed failed with error {ex}");
                 }
             }
             else
             {
                 //접속 종료. 전송된 바이트가 0이라는 것은 접속 종료의 의미
+                Disconnect();
             }
         }
 
         #endregion
-        public void send(byte[] sendBuffer)
+
+
+
+
+        public void Send(byte[] sendbuff)
         {
-            _sessionSocket.Send(sendBuffer);
+            lock (_customlock)
+            {
+                _sendingQueue.Enqueue(sendbuff);
+                if (_pending == false)
+                {
+                    RegisterSend();
+                }
+            }
         }
+
+        void RegisterSend()
+        {
+            _pending = true;
+            byte[] sendbuff =_sendingQueue.Dequeue();
+            _sendingArgs.SetBuffer(sendbuff,0,sendbuff.Length);
+
+            bool pending = _sessionSocket.SendAsync(_sendingArgs);
+            if (pending == false)
+            {
+                SendCompleted(null, _sendingArgs);
+            }
+
+        }
+
+        void SendCompleted(object sender, SocketAsyncEventArgs _sendingArgs)
+        {
+            lock (_customlock)
+            {
+                if (_sendingArgs.BytesTransferred > 0 && _sendingArgs.SocketError == SocketError.Success)
+                {
+                    try
+                    {
+                        if (_sendingQueue.Count > 0)
+                        {
+                            RegisterSend();
+                        }
+                        _pending = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"send completed failed with error {ex}");
+                    }
+                }
+                else
+                {
+                    Disconnect();
+                }
+
+
+            }
+
+        }
+
+
+
 
         public void Disconnect()
         {
-            if ( Interlocked.Exchange(ref _disconnectedCondition,1) ==1 )
+            if ( Interlocked.Exchange(ref _disconnectedCondition,1) == 1 )
             {
                 return;
             }
