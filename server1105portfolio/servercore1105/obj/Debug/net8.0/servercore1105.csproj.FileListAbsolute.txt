@@ -1,6 +1,4 @@
-C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\servercore1105\bin\Debug\net8.0\servercore1105.exe
 C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\servercore1105\bin\Debug\net8.0\servercore1105.deps.json
-C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\servercore1105\bin\Debug\net8.0\servercore1105.runtimeconfig.json
 C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\servercore1105\bin\Debug\net8.0\servercore1105.dll
 C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\servercore1105\bin\Debug\net8.0\servercore1105.pdb
 C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\servercore1105\obj\Debug\net8.0\servercore1105.GeneratedMSBuildEditorConfig.editorconfig
@@ -11,5 +9,4 @@ C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portf
 C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\servercore1105\obj\Debug\net8.0\servercore1105.dll
 C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\servercore1105\obj\Debug\net8.0\refint\servercore1105.dll
 C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\servercore1105\obj\Debug\net8.0\servercore1105.pdb
-C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\servercore1105\obj\Debug\net8.0\servercore1105.genruntimeconfig.cache
 C:\Users\박송이\source\repos\jongwooc\Csharpserver_portfolio2\server1105portfolio\servercore1105\obj\Debug\net8.0\ref\servercore1105.dll

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace servercore1105
 {
-    abstract class Session
+    public abstract class Session
     {
 
         #region 이니셜라이즈

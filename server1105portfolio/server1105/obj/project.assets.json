@@ -8,6 +8,19 @@
           "build/Microsoft.VisualStudio.Azure.Containers.Tools.Targets.props": {},
           "build/Microsoft.VisualStudio.Azure.Containers.Tools.Targets.targets": {}
         }
+      },
+      "servercore1105/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "1.21.0"
+        },
+        "compile": {
+          "bin/placeholder/servercore1105.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/servercore1105.dll": {}
+        }
       }
     }
   },
@@ -91,11 +104,17 @@
         "tools/zh-Hant/Microsoft.VisualStudio.Containers.Tools.Shared.resources.dll",
         "tools/zh-Hant/Microsoft.VisualStudio.Containers.Tools.Tasks.resources.dll"
       ]
+    },
+    "servercore1105/1.0.0": {
+      "type": "project",
+      "path": "../servercore1105/servercore1105.csproj",
+      "msbuildProject": "../servercore1105/servercore1105.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "Microsoft.VisualStudio.Azure.Containers.Tools.Targets >= 1.21.0"
+      "Microsoft.VisualStudio.Azure.Containers.Tools.Targets >= 1.21.0",
+      "servercore1105 >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -130,7 +149,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\박송이\\source\\repos\\jongwooc\\Csharpserver_portfolio2\\server1105portfolio\\servercore1105\\servercore1105.csproj": {
+              "projectPath": "C:\\Users\\박송이\\source\\repos\\jongwooc\\Csharpserver_portfolio2\\server1105portfolio\\servercore1105\\servercore1105.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

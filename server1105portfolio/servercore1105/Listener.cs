@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 //33cfe8.dvrinside.com/CMSPluginInstaller64.msi
 namespace servercore1105
 {
-    internal class Listener
+    public class Listener
     {
         Socket _listenerSocket;
         Func<Session> _sessionFactory;
@@ -32,8 +32,6 @@ namespace servercore1105
             //비동기적 이벤트 콜백함수로 등록
             SocketAsyncEventArgs _Args1 = new SocketAsyncEventArgs();
             _Args1.Completed += new EventHandler<SocketAsyncEventArgs>(AcceptCompleted);
-
-            Thread.Sleep(1000);
 
             RegisterAccept(_Args1);
 
@@ -60,6 +58,7 @@ namespace servercore1105
             if (_Args1.SocketError == SocketError.Success)
             {
                 //나머지는 대충 이해가 되는데 세션 팩토리는 정의 한 적이 없는데 어떻게 인보크가 가능할까?
+                //외부에서 함수 자체를 인자로 넘겨줘서 그걸 사용하는거구나.. 함수 포인터로 쓸 때는 상상도 못하던 용법
                 Session _session = _sessionFactory.Invoke();
                 _session.Init(_Args1.AcceptSocket);
                 _session.OnConnected(_Args1.AcceptSocket.RemoteEndPoint);
