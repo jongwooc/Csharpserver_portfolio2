@@ -49,7 +49,7 @@
             int writelock_threadID = (_flag & WRITE_MASK) >> 16;
             if (Thread.CurrentThread.ManagedThreadId == writelock_threadID)
             {
-                //플래그의 하위 비트가 리드락 상태니까
+                //플래그의 하위 비트가 리드락 상태니
                 Interlocked.Increment(ref _flag);
                 return;
             }
@@ -101,7 +101,8 @@
         {
             while (true)
             {
-                int lock_condition = Interlocked.CompareExchange(ref _locked, (int)lock_check.desired, (int)lock_check.expected);
+                int lock_condition = 
+                    Interlocked.CompareExchange(ref _locked,(int)lock_check.desired, (int)lock_check.expected);
                 if (lock_condition == 0)
                 {
                     break;

@@ -26,3 +26,6 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "dummyclient.dll"]
+
+#포트오픈
+EXPOSE 7890

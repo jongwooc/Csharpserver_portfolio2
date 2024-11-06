@@ -21,6 +21,30 @@ namespace servercore1105
             Console.WriteLine(Threadname.Value);
         }
         */
+        static Listener _listener = new Listener();
+        static void actionAtAccept (Socket clientSocket)
+        {
+            try
+            {                
+                Session _session = new Session();
+                _session.Init(clientSocket);
+
+                byte[] sendBuffer = Encoding.UTF8.GetBytes("서버오픈 데이터 전송 테스트");
+                Console.WriteLine("클라이언트에게 테스트 데이터 전송");
+
+                _session.send(sendBuffer);
+
+                Thread.Sleep(1000);
+
+                _session.Disconnect();
+
+            }
+            catch (Exception occuredException)
+            {
+                Console.WriteLine(occuredException.ToString());
+            }
+
+        }
 
         static void Main(string[] args)
         {
@@ -45,41 +69,18 @@ namespace servercore1105
             IPAddress ipAddress = ipHost.AddressList[0];
             IPEndPoint endPoint = new IPEndPoint(ipAddress, 7890);
 
-            // listener소켓 생성
-            Socket listenerSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
             //서버와 클라이언트의 연결은 언제나 위험이 있기 때문에 try-catch로 대비한다.
-            try
+
+            //리스너 생성 및 설정
+            _listener.Init(endPoint,actionAtAccept);
+            Console.WriteLine("listening 대기 중");
+
+            //서버의 무한 대기
+            while (true)
             {
-                //소켓 고정
-                listenerSocket.Bind(endPoint);
-                //서버 대기 시작 +최대 대기수
-                listenerSocket.Listen(10);
-                //서버의 무한 대기
-                while (true)
-                {
-                    Console.WriteLine("listen test");
-                    //클라 소켓을 리스너랑 연결
-                    Socket clientSocket = listenerSocket.Accept();
-                    //연결된 소켓에서 데이터를 받는다
-                    byte[] recievedBuffer = new byte[1024];
-                    int recievedBytes = clientSocket.Receive(recievedBuffer);
-                    string recievedData = Encoding.UTF8.GetString(recievedBuffer, 0, recievedBytes);
-                    Console.WriteLine($"received {recievedData}");
-                    //데이터를 보내본다
-                    byte[] sendBuffer = Encoding.UTF8.GetBytes("서버오픈 데이터 전송 테스트");
-                    Console.WriteLine("클라이언트에게 테스트 데이터 전송");
-                    clientSocket.Send(sendBuffer);
-                    //연결종료 직전에 리슨과 센드를 모두 종료한다 
-                    clientSocket.Shutdown(SocketShutdown.Both);
-                    //리슨과 샌드를 모두 종료후 실제 연결을 종료한다
-                    clientSocket.Close();
-                }
+                ;
             }
-            catch (Exception occuredException)
-            {
-                Console.WriteLine(occuredException.ToString());
-            }
+
         }
     }
 }

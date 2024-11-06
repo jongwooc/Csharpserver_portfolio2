@@ -26,3 +26,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "server1105.dll"]
+
+
+#포트오픈
+EXPOSE 7890
