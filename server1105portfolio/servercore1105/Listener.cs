@@ -14,12 +14,12 @@ namespace servercore1105
         Socket _listenerSocket;
         Func<Session> _sessionFactory;
 
-        public void Init(IPEndPoint _endpoint, Func<Session> _sessionFactory)
+        public void Init(IPEndPoint _endpoint, Func<Session> sessionFactory)
         {
             // listener소켓 생성
             _listenerSocket = new Socket(_endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             //내부 변수 액션에 원하는 작업을 받아 넣는다.
-            _sessionFactory += _sessionFactory;
+            _sessionFactory += sessionFactory;
             //소켓 고정
             _listenerSocket.Bind(_endpoint);
             //서버 대기 시작 +최대 대기수
@@ -32,6 +32,8 @@ namespace servercore1105
             //비동기적 이벤트 콜백함수로 등록
             SocketAsyncEventArgs _Args1 = new SocketAsyncEventArgs();
             _Args1.Completed += new EventHandler<SocketAsyncEventArgs>(AcceptCompleted);
+
+            Thread.Sleep(1000);
 
             RegisterAccept(_Args1);
 
