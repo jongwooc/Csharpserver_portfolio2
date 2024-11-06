@@ -14,31 +14,34 @@ namespace servercore1105
 
         Socket _sessionSocket;
         volatile int _disconnectedCondition = 0;
+        bool _pending = false;
+        object _customlock = new object();
 
         Queue<byte[]> _sendingQueue = new Queue<byte[]>();
-        bool _pending = false;
+        List<ArraySegment<byte>> _pendingBufferList = new List<ArraySegment<byte>>();
+
         SocketAsyncEventArgs _sendingArgs = new SocketAsyncEventArgs();
-        object _customlock = new object();
+        SocketAsyncEventArgs _receivedArgs = new SocketAsyncEventArgs();
 
         public void Init(Socket incomingSocket)
         {
             _sessionSocket = incomingSocket;
-            SocketAsyncEventArgs receivedArgs = new SocketAsyncEventArgs();
-            receivedArgs.Completed += new EventHandler<SocketAsyncEventArgs>(ReceiveCompleted);
+
+            _receivedArgs.Completed += new EventHandler<SocketAsyncEventArgs>(ReceiveCompleted);
             //추가로 뭔가를 하고 싶을 때
             //receivedArgs.UserToken = null;
-            receivedArgs.SetBuffer(new byte[1024], 0, 1024);
+            _receivedArgs.SetBuffer(new byte[1024], 0, 1024);
 
             _sendingArgs.Completed += new EventHandler<SocketAsyncEventArgs>(SendCompleted);
 
-            RegisterReceive(receivedArgs);
+            RegisterReceive();
         }
 
         #endregion
 
 
         #region 리시브 네트워크 통신
-        void RegisterReceive(SocketAsyncEventArgs _receivedArgs)
+        void RegisterReceive()
         {
             bool pending = _sessionSocket.ReceiveAsync(_receivedArgs);
             if (pending == false)
@@ -58,7 +61,7 @@ namespace servercore1105
                     //리시브시 할일
                     string recievedData = Encoding.UTF8.GetString(_receivedArgs.Buffer, _receivedArgs.Offset, _receivedArgs.BytesTransferred);
                     Console.WriteLine($"received {recievedData}");
-                    RegisterReceive(_receivedArgs);
+                    RegisterReceive();
                 }
                 catch (Exception ex)
                 {
@@ -82,18 +85,26 @@ namespace servercore1105
             lock (_customlock)
             {
                 _sendingQueue.Enqueue(sendbuff);
-                if (_pending == false)
+                if (_pendingBufferList.Count == 0)
                 {
                     RegisterSend();
                 }
             }
         }
 
+
+
+        #region 샌드 네트워크 통신
+
         void RegisterSend()
         {
-            _pending = true;
-            byte[] sendbuff =_sendingQueue.Dequeue();
-            _sendingArgs.SetBuffer(sendbuff,0,sendbuff.Length);
+            while (_sendingQueue.Count > 0)
+            {
+                byte[] sendbuff = _sendingQueue.Dequeue();
+                _pendingBufferList.Add(new ArraySegment<byte>(sendbuff,0,sendbuff.Length));
+            }
+
+            _sendingArgs.BufferList = _pendingBufferList;
 
             bool pending = _sessionSocket.SendAsync(_sendingArgs);
             if (pending == false)
@@ -111,6 +122,10 @@ namespace servercore1105
                 {
                     try
                     {
+                        _sendingArgs.BufferList = null;
+                        _pendingBufferList.Clear();
+                        Console.WriteLine($"Transferred bytes = {_sendingArgs.BytesTransferred}");
+
                         if (_sendingQueue.Count > 0)
                         {
                             RegisterSend();
@@ -131,7 +146,7 @@ namespace servercore1105
             }
 
         }
-
+#endregion
 
 
 
