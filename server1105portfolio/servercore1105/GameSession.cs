@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace servercore1105
 {
-    public class GameSession : Session
+    public class GameSession : parent_Session
     {
         public override void OnConnected(EndPoint connectionEndPoint)
         {
@@ -17,10 +17,11 @@ namespace servercore1105
         {
             Console.WriteLine($"GameSession OnDisconnected from = {connectionEndPoint}");
         }
-        public override void OnReceived(ArraySegment<byte> receivedBufferArraySegment)
+        public override int OnReceived(ArraySegment<byte> receivedBufferArraySegment)
         {
             string recievedData = Encoding.UTF8.GetString(receivedBufferArraySegment.Array, receivedBufferArraySegment.Offset, receivedBufferArraySegment.Count);
             Console.WriteLine($"GameSession OnReceived data string {recievedData}");
+            return receivedBufferArraySegment.Count;
         }
         public override void OnSending(int sendingBytesTransferredInt)
         {

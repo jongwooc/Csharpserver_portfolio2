@@ -23,10 +23,11 @@ namespace dummyclient
             }
         }
 
-        public override void OnReceived(ArraySegment<byte> receivedBufferArraySegment)
+        public override int OnReceived(ArraySegment<byte> receivedBufferArraySegment)
         {
             string recievedData = Encoding.UTF8.GetString(receivedBufferArraySegment.Array, receivedBufferArraySegment.Offset, receivedBufferArraySegment.Count);
             Console.WriteLine($"클라이언트가 서버로부터 {recievedData} 를 받았습니다.");
+            return receivedBufferArraySegment.Count;
         }
     }
 }

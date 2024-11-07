@@ -11,15 +11,15 @@ namespace servercore1105
 {
     public class Listener
     {
-        Socket _listenerSocket;
-        Func<Session> _sessionFactory;
+        protected Socket _listenerSocket;
+        protected Func<parent_Session> _sessionFactory;
 
-        public void Init(IPEndPoint _endpoint, Func<Session> sessionFactory)
+        public void Init(IPEndPoint _endpoint, Func<parent_Session> sessionFactory)
         {
             // listener소켓 생성
             _listenerSocket = new Socket(_endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             //내부 변수 액션에 원하는 작업을 받아 넣는다.
-            _sessionFactory += sessionFactory;
+            _sessionFactory = sessionFactory;
             //소켓 고정
             _listenerSocket.Bind(_endpoint);
             //서버 대기 시작 +최대 대기수
@@ -59,7 +59,7 @@ namespace servercore1105
             {
                 //나머지는 대충 이해가 되는데 세션 팩토리는 정의 한 적이 없는데 어떻게 인보크가 가능할까?
                 //외부에서 함수 자체를 인자로 넘겨줘서 그걸 사용하는거구나.. 함수 포인터로 쓸 때는 상상도 못하던 용법
-                Session _session = _sessionFactory.Invoke();
+                parent_Session _session = _sessionFactory.Invoke();
                 _session.Init(_Args1.AcceptSocket);
                 _session.OnConnected(_Args1.AcceptSocket.RemoteEndPoint);
             }   

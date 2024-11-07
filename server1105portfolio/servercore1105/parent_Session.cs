@@ -8,26 +8,27 @@ using System.Threading.Tasks;
 
 namespace servercore1105
 {
-    public abstract class Session
+    public abstract class parent_Session
     {
 
         #region 이니셜라이즈
 
-        Socket _sessionSocket;
-        volatile int _disconnectedCondition = 0;
-        bool _pending = false;
-        object _customlock = new object();
+        protected Socket _sessionSocket;
+        protected int _disconnectedCondition = 0;
+        protected bool _pending = false;
 
-        Queue<byte[]> _sendingQueue = new Queue<byte[]>();
-        List<ArraySegment<byte>> _pendingBufferList = new List<ArraySegment<byte>>();
+        protected Queue<byte[]> _sendingQueue = new Queue<byte[]>();
+        protected List<ArraySegment<byte>> _pendingBufferList = new List<ArraySegment<byte>>();
 
-        SocketAsyncEventArgs _sendingArgs = new SocketAsyncEventArgs();
-        SocketAsyncEventArgs _receivedArgs = new SocketAsyncEventArgs();
+        protected SocketAsyncEventArgs _sendingArgs = new SocketAsyncEventArgs();
+        protected SocketAsyncEventArgs _receivedArgs = new SocketAsyncEventArgs();
+
+        protected ReceiveBuffer _receiveBuffer = new ReceiveBuffer(); 
 
 
         //세션을 상속받거나 외부에서 사용할 인터페이스 추가
         public abstract void OnConnected(EndPoint clientEndPoint);
-        public abstract void OnReceived(ArraySegment<byte> receivedBufferArraySegment);
+        public abstract int  OnReceived(ArraySegment<byte> receivedBufferArraySegment);
         public abstract void OnSending(int sendingBytesTransferredInt);
         public abstract void OnDisconnected(EndPoint clientEndPoint);
 
@@ -38,9 +39,6 @@ namespace servercore1105
             _sessionSocket = incomingSocket;
 
             _receivedArgs.Completed += new EventHandler<SocketAsyncEventArgs>(ReceiveCompleted);
-            //추가로 뭔가를 하고 싶을 때
-            //receivedArgs.UserToken = null;
-            _receivedArgs.SetBuffer(new byte[1024], 0, 1024);
 
             _sendingArgs.Completed += new EventHandler<SocketAsyncEventArgs>(SendCompleted);
 
@@ -53,6 +51,10 @@ namespace servercore1105
         #region 리시브 네트워크 통신
         void RegisterReceive()
         {
+            _receiveBuffer.Clean();
+            ArraySegment<byte> segmentforReceive = _receiveBuffer.WritableDataSegment;
+            _receivedArgs.SetBuffer(segmentforReceive.Array,segmentforReceive.Offset,segmentforReceive.Count);
+
             bool pending = _sessionSocket.ReceiveAsync(_receivedArgs);
             if (pending == false)
             {
@@ -67,7 +69,30 @@ namespace servercore1105
             {
                 try
                 {
-                    OnReceived(new ArraySegment<byte>(_receivedArgs.Buffer, _receivedArgs.Offset, _receivedArgs.BytesTransferred));
+                    //writeoffset이동
+                    if(_receiveBuffer.OnWrite(_receivedArgs.BytesTransferred)== false)
+                    {
+                        Disconnect();
+                        return;
+                    }
+
+
+
+                    //컨텐츠 코드에게 데이터를 넘겨주고 얼마나 처리 했는지 확인
+                    int processingLength = OnReceived(_receiveBuffer.ReadableDataSegment);
+                    if (processingLength < 0 || _receiveBuffer.DataSize < processingLength)
+                    {
+                        Disconnect();
+                        return;
+                    }
+
+                    if (_receiveBuffer.OnRead(processingLength) == false)
+                    {
+                        Disconnect();
+                        return;
+                    }
+
+
                     RegisterReceive();
                 }
                 catch (Exception ex)
@@ -89,13 +114,10 @@ namespace servercore1105
 
         public void Send(byte[] sendbuff)
         {
-            lock (_customlock)
+            _sendingQueue.Enqueue(sendbuff);
+            if (_pendingBufferList.Count == 0)
             {
-                _sendingQueue.Enqueue(sendbuff);
-                if (_pendingBufferList.Count == 0)
-                {
-                    RegisterSend();
-                }
+                RegisterSend();
             }
         }
 
@@ -123,35 +145,29 @@ namespace servercore1105
 
         void SendCompleted(object sender, SocketAsyncEventArgs _sendingArgs)
         {
-            lock (_customlock)
+            if (_sendingArgs.BytesTransferred > 0 && _sendingArgs.SocketError == SocketError.Success)
             {
-                if (_sendingArgs.BytesTransferred > 0 && _sendingArgs.SocketError == SocketError.Success)
+                try
                 {
-                    try
-                    {
-                        _sendingArgs.BufferList = null;
-                        _pendingBufferList.Clear();
-                        OnSending(_sendingArgs.BytesTransferred);
+                    _sendingArgs.BufferList = null;
+                    _pendingBufferList.Clear();
+                    OnSending(_sendingArgs.BytesTransferred);
 
-                        if (_sendingQueue.Count > 0)
-                        {
-                            RegisterSend();
-                        }
-                        _pending = false;
-                    }
-                    catch (Exception ex)
+                    if (_sendingQueue.Count > 0)
                     {
-                        Console.WriteLine($"send completed failed with error {ex}");
+                        RegisterSend();
                     }
+                    _pending = false;
                 }
-                else
+                catch (Exception ex)
                 {
-                    Disconnect();
+                    Console.WriteLine($"send completed failed with error {ex}");
                 }
-
-
             }
-
+            else
+            {
+                Disconnect();
+            }
         }
 #endregion
 
