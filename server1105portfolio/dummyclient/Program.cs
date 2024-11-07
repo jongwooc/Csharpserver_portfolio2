@@ -21,8 +21,12 @@ namespace dummyclient
             IPEndPoint endPoint = new IPEndPoint(ipAddress, 7890);
 
 
+            Console.WriteLine($"클라이언트 시작.{endPoint} 로 접속 생성 중");
+
             Connector clientconnector = new Connector();
             clientconnector.Init(endPoint, () => { return new GameSessionforClient(); });
+
+
 
             while (true)
             {

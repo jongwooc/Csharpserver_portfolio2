@@ -10,9 +10,9 @@ namespace servercore1105
 {
     public class Connector
     {
-        Func<parent_Session> _sessionFactory;
+        Func<GameSession> _sessionFactory;
 
-        public void Init (IPEndPoint endPoint, Func<parent_Session> sessionFactory)
+        public void Init (IPEndPoint endPoint, Func<GameSession> sessionFactory)
         {
             Socket initSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             _sessionFactory = sessionFactory;
@@ -40,20 +40,20 @@ namespace servercore1105
             bool pending = false;
             pending = registerConnectSocket.ConnectAsync(registerConnectArgs);
 
-
             if (pending == false)
             {
                 OnConnectCompleted(null, registerConnectArgs);
             }
+
 
         }
         void OnConnectCompleted(object sender, SocketAsyncEventArgs onConnectArgs)
         {
             if (onConnectArgs.SocketError == SocketError.Success)
             {
-                parent_Session session = _sessionFactory.Invoke();
+                GameSession session = _sessionFactory.Invoke();
                 session.Init(onConnectArgs.ConnectSocket);
-                session.OnDisconnected(onConnectArgs.RemoteEndPoint);
+                session.OnConnected(onConnectArgs.RemoteEndPoint);
 
             }
             else

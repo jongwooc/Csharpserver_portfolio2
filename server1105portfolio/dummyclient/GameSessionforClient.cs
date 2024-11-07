@@ -13,21 +13,26 @@ namespace dummyclient
     {
         public override void OnConnected(EndPoint clientEndPoint)
         {
-            Console.WriteLine($"GameSession OnConnected from = {clientEndPoint}");
+            Console.WriteLine($"클라이언트 GameSession OnConnected from = {clientEndPoint}");
+
+
+
+            Packet packet = new Packet() { size = 27, packetID = 72 };
 
             //여러번 보낸다.
             for (int i = 0; i < 5; i++)
             {
-                byte[] sendBuffer = Encoding.UTF8.GetBytes("클라에서 서버로 테스트 메세지 전송");
-                Send(sendBuffer);
-            }
-        }
+                ArraySegment<byte> openSegment = SendBufferHelper.Open(1024);
 
-        public override int OnReceived(ArraySegment<byte> receivedBufferArraySegment)
-        {
-            string recievedData = Encoding.UTF8.GetString(receivedBufferArraySegment.Array, receivedBufferArraySegment.Offset, receivedBufferArraySegment.Count);
-            Console.WriteLine($"클라이언트가 서버로부터 {recievedData} 를 받았습니다.");
-            return receivedBufferArraySegment.Count;
+                byte[] sendBuffer1 = BitConverter.GetBytes(packet.size);
+                byte[] sendBuffer2 = BitConverter.GetBytes(packet.packetID);
+                Array.Copy(sendBuffer1, 0, openSegment.Array, openSegment.Offset, sendBuffer1.Length);
+                Array.Copy(sendBuffer2, 0, openSegment.Array, openSegment.Offset + sendBuffer1.Length, sendBuffer2.Length);
+                ArraySegment<byte> completedBuffer = SendBufferHelper.Close(sendBuffer1.Length + sendBuffer2.Length);
+
+
+                Send(completedBuffer);
+            }
         }
     }
 }

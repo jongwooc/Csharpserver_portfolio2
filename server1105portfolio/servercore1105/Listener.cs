@@ -12,9 +12,9 @@ namespace servercore1105
     public class Listener
     {
         protected Socket _listenerSocket;
-        protected Func<parent_Session> _sessionFactory;
+        protected Func<GameSession> _sessionFactory;
 
-        public void Init(IPEndPoint _endpoint, Func<parent_Session> sessionFactory)
+        public void Init(IPEndPoint _endpoint, Func<GameSession> sessionFactory)
         {
             // listener소켓 생성
             _listenerSocket = new Socket(_endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -59,7 +59,7 @@ namespace servercore1105
             {
                 //나머지는 대충 이해가 되는데 세션 팩토리는 정의 한 적이 없는데 어떻게 인보크가 가능할까?
                 //외부에서 함수 자체를 인자로 넘겨줘서 그걸 사용하는거구나.. 함수 포인터로 쓸 때는 상상도 못하던 용법
-                parent_Session _session = _sessionFactory.Invoke();
+                GameSession _session = _sessionFactory.Invoke();
                 _session.Init(_Args1.AcceptSocket);
                 _session.OnConnected(_Args1.AcceptSocket.RemoteEndPoint);
             }   

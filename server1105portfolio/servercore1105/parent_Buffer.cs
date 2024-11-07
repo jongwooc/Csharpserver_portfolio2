@@ -8,10 +8,10 @@ namespace servercore1105
 {
     public class parent_Buffer
     {
-        protected ArraySegment<byte> _buffer;
-        protected int _readoffset;
-        protected int _writeoffset;
-        protected const int BASEBUFFERSIZE = 1024;
+        public ArraySegment<byte> _buffer;
+        public int _readoffset;
+        public int _writeoffset;
+        const int BASEBUFFERSIZE = 4096;
 
         public int DataSize { get { return _writeoffset - _readoffset; } }
         public int FreeSize { get { return _buffer.Count - _writeoffset; } }
