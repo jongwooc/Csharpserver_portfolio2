@@ -156,7 +156,7 @@
     }
 
 
-        internal class Locks
+    internal class Locks
     {
         //C#의 볼리타일은 특이해서 가능하면 쓰지 않는 것이 좋다.
         //volatile static bool _thread_share = false;
@@ -244,4 +244,34 @@
             }
         }
     }
+
+            /*
+        스레드 로컬 스토리지 테스트 주석처리 
+        static ThreadLocal<string> Threadname = new ThreadLocal<string>();
+
+        static void ThreadLocal_Learning()
+        {
+
+            Threadname.Value = $"Thread Learning test. Thread value is {Thread.CurrentThread.ManagedThreadId}";
+            Thread.Sleep(1000);
+            Console.WriteLine(Threadname.Value);
+        }
+        */
+
+        //스레드 연습 한 것은 주석처리
+        /*
+        ThreadPool.SetMinThreads(1, 1);
+        ThreadPool.SetMaxThreads(5, 5);
+        static Mutex _MutexLock = new Mutex;
+        _MutexLock.WaitOne();
+        _MutexLock.ReleaseMutex();
+        Thread test001 = new Thread(MainThread);
+        test001.IsBackground = true;
+        test001.Start();
+        test001.Join();
+        ThreadPool.QueueUserWorkItem(MainThread);
+        Task testtask001 = new Task(() => { while (true); { } },TaskCreationOptions.LongRunning);
+        Console.WriteLine("Thread test end");
+        Parallel.Invoke(ThreadLocal_Learning, ThreadLocal_Learning, ThreadLocal_Learning, ThreadLocal_Learning);
+        */
 }

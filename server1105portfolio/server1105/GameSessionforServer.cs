@@ -13,11 +13,23 @@ namespace server1105
         public override void OnConnected(EndPoint clientEndPoint)
         {
             Console.WriteLine($"GameSession OnConnected from = {clientEndPoint}");
-            byte[] sendBuffer = Encoding.UTF8.GetBytes("서버오픈 데이터 전송 테스트");
 
-            Send(sendBuffer);
+            Knight knght1 = new Knight() { name = "knight1",hp = 100, attack = 10 };
+
+            ArraySegment<byte> openSegment = SendBufferHelper.Open(4096);
+
+            byte[] sendBuffer1 = BitConverter.GetBytes(knght1.hp);
+            byte[] sendBuffer2 = BitConverter.GetBytes(knght1.attack);
+            Array.Copy(sendBuffer1, 0, openSegment.Array, openSegment.Offset, sendBuffer1.Length);
+            Array.Copy(sendBuffer2, 0, openSegment.Array, openSegment.Offset + sendBuffer1.Length, sendBuffer2.Length);
+            ArraySegment<byte> completedBuffer = SendBufferHelper.Close(sendBuffer1.Length + sendBuffer2.Length);
+
+
+            Send(completedBuffer);
             Thread.Sleep(1000);
             Disconnect();
+
+
         }
     }
 }

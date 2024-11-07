@@ -17,7 +17,7 @@ namespace servercore1105
         protected int _disconnectedCondition = 0;
         protected bool _pending = false;
 
-        protected Queue<byte[]> _sendingQueue = new Queue<byte[]>();
+        protected Queue<ArraySegment<byte>> _sendingQueue = new Queue<ArraySegment<byte>>();
         protected List<ArraySegment<byte>> _pendingBufferList = new List<ArraySegment<byte>>();
 
         protected SocketAsyncEventArgs _sendingArgs = new SocketAsyncEventArgs();
@@ -112,7 +112,7 @@ namespace servercore1105
 
 
 
-        public void Send(byte[] sendbuff)
+        public void Send(ArraySegment<byte> sendbuff)
         {
             _sendingQueue.Enqueue(sendbuff);
             if (_pendingBufferList.Count == 0)
@@ -129,8 +129,8 @@ namespace servercore1105
         {
             while (_sendingQueue.Count > 0)
             {
-                byte[] sendbuff = _sendingQueue.Dequeue();
-                _pendingBufferList.Add(new ArraySegment<byte>(sendbuff,0,sendbuff.Length));
+                ArraySegment<byte> sendbuff = _sendingQueue.Dequeue();
+                _pendingBufferList.Add(sendbuff);
             }
 
             _sendingArgs.BufferList = _pendingBufferList;
