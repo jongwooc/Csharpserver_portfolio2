@@ -15,18 +15,16 @@ namespace server1105
             Console.WriteLine($"서버 GameSession OnConnected from = {clientEndPoint}");
 
             //Knight knght1 = new Knight() { name = "knight1",hp = 100, attack = 10 };
-            Packet packet = new Packet() { size = 91, packetID = 997 };
 
-            ArraySegment<byte> openSegment = SendBufferHelper.Open(1024);
-
+            ArraySegment<byte> openSegment = SendBufferHelper.Open(576);
+/*
             byte[] sendBuffer1 = BitConverter.GetBytes(packet.size);
             byte[] sendBuffer2 = BitConverter.GetBytes(packet.packetID);
             Array.Copy(sendBuffer1, 0, openSegment.Array, openSegment.Offset, sendBuffer1.Length);
             Array.Copy(sendBuffer2, 0, openSegment.Array, openSegment.Offset + sendBuffer1.Length, sendBuffer2.Length);
             ArraySegment<byte> completedBuffer = SendBufferHelper.Close(sendBuffer1.Length + sendBuffer2.Length);
-
-
-            Send(completedBuffer);
+*/
+            
 
 
         }

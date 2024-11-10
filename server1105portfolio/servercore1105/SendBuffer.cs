@@ -12,7 +12,7 @@ namespace servercore1105
     public class SendBufferHelper
     {
         public static ThreadLocal<SendBuffer> CurrentBuffer = new ThreadLocal<SendBuffer>(() => { return null; });
-        public static int sendBuffersizeInt { get; set; } = 2048 * 64;
+        public static int sendBuffersizeInt { get; set; } = 536;
         public static ArraySegment<byte> Open(int requiredsize)
         {
             if (CurrentBuffer.Value == null)
