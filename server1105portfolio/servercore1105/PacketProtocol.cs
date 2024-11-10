@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,43 +16,43 @@ namespace servercore1105
     }
     public class PlayerInfoReq : Packet
     {
-        public int _PlayerID;
-        public string _PlayerName;
+        public int _PlayerID { get; set; }
+        public string _PlayerName { get; set; }
 
-        public void Init()
+        public override void Init()
         {
-            _size += sizeof(int);
             _packetID = (ushort)PacketID.PLAYERINFOREQ;
-        }
-        public void Init(int PlayerID, string Playername) 
-        {
+
             _size += sizeof(int);
 
             _size += sizeof(ushort);
-            _size += (ushort)Encoding.Unicode.GetByteCount(Playername);
+            _size += (ushort)Encoding.Unicode.GetByteCount(_PlayerName);
 
             _packetID = (ushort)PacketID.PLAYERINFOREQ;
 
-            _PlayerID = PlayerID;
 
-            _PlayerName = Playername;
         }
 
 
-        public override void SerializeAll()
+
+
+        public override byte[] SerializeAll()
         {
             int _finalize = 0;
             _totalPacketArrayOffset = Serialize(_packetID, _totalPacketArrayOffset);
             _totalPacketArrayOffset = Serialize(_PlayerID, _totalPacketArrayOffset);
-            _totalPacketArrayOffset = Serialize((ushort)Encoding.Unicode.GetByteCount(_PlayerName), _totalPacketArrayOffset);
+            _totalPacketArrayOffset = Serialize(_PlayerName, _totalPacketArrayOffset);
 
             if (_size == _totalPacketArrayOffset)
             {
-
-                Console.WriteLine("전체 직렬화 최종 확인 중");
+                Console.WriteLine("전체 직렬화 최종 확인");
                 _finalize = Serialize(_size, 0);
             }
-            Console.WriteLine("전체 직렬화 최종 확인에 실패했습니다.");
+            else
+            {
+                Console.WriteLine("전체 직렬화 최종 확인에 실패했습니다.");
+            }
+            return this._totalPacketArray;
         }
         public override void DeserializeAll(byte[] Packet)
         {
@@ -75,6 +76,7 @@ namespace servercore1105
             _tempPacketArrayOffset += sizeof(int);
             Console.WriteLine($"플레이어 아이디는 {_PlayerID}입니다.");
 
+            //스트링은 먼저 사이즈 정보의 오프셋을 수정해야한다.
             int stringsize = Ushort_Deserialize(Packet, _tempPacketArrayOffset);
             _tempPacketArrayOffset += sizeof(ushort);
             _PlayerName = String_Deserialize(Packet, _tempPacketArrayOffset, stringsize);

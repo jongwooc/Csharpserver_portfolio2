@@ -16,22 +16,34 @@ namespace dummyclient
             Console.WriteLine($"클라이언트 GameSession OnConnected from = {clientEndPoint}");
 
 
-
-            //여러번 보낸다.
-            for (int i = 0; i < 5; i++)
+            Packet test = new PlayerInfoReq
             {
-                ArraySegment<byte> openSegment = SendBufferHelper.Open(576);
-/*
-                byte[] sendBuffer1 = BitConverter.GetBytes(packet.size);
-                byte[] sendBuffer2 = BitConverter.GetBytes(packet.packetID);
-                Array.Copy(sendBuffer1, 0, openSegment.Array, openSegment.Offset, sendBuffer1.Length);
-                Array.Copy(sendBuffer2, 0, openSegment.Array, openSegment.Offset + sendBuffer1.Length, sendBuffer2.Length);
-                ArraySegment<byte> completedBuffer = SendBufferHelper.Close(sendBuffer1.Length + sendBuffer2.Length);
-*/
-                Packet test = new PlayerInfoReq();
+                _PlayerID = 5555,
+                _PlayerName = "테스트알파"
+            };
 
-                //Send(completedBuffer);
-            }
+            Console.WriteLine($"클라이언트 테스트 플레이어 아이디{((PlayerInfoReq)test)._PlayerID}");
+
+            Console.WriteLine($"클라이언트 테스트 플레이어 이름{((PlayerInfoReq)test)._PlayerName}");
+
+            test.Init();
+
+            byte[] test222 = test.SerializeAll();
+
+            //ArraySegment<byte> openSegment = SendBufferHelper.Open(576);
+            /*
+                            byte[] sendBuffer1 = BitConverter.GetBytes(packet.size);
+                            byte[] sendBuffer2 = BitConverter.GetBytes(packet.packetID);
+                            Array.Copy(sendBuffer1, 0, openSegment.Array, openSegment.Offset, sendBuffer1.Length);
+                            Array.Copy(sendBuffer2, 0, openSegment.Array, openSegment.Offset + sendBuffer1.Length, sendBuffer2.Length);
+                            ArraySegment<byte> completedBuffer = SendBufferHelper.Close(sendBuffer1.Length + sendBuffer2.Length);
+            */
+
+
+            //Send(completedBuffer);
+
+            ArraySegment<byte> openSegment = test.SerializeAll();
+            Send(openSegment);
         }
     }
 }

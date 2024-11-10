@@ -26,6 +26,7 @@ namespace server1105
 
             Console.WriteLine($" 서버 시작.나의 엔드포인트는 {endPoint} 로 접속 생성 중");
 
+
             //리스너 생성 및 설정
             _listener.Init(endPoint, () => { return new GameSessionforServer(); });
             Console.WriteLine("listening 대기 중");

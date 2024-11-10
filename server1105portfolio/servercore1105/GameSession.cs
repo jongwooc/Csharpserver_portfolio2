@@ -22,12 +22,16 @@ namespace servercore1105
         public override void OnSending(int sendingBytesTransferredInt)
         {
             Console.WriteLine($"GameSession OnSending Transferred bytes = {sendingBytesTransferredInt}");
+
+
         }
 
         public override void OnPacketReceived(ArraySegment<byte> packetBufferArraySegment)
         {
-            ushort size = BitConverter.ToUInt16(packetBufferArraySegment.Array, packetBufferArraySegment.Offset);
-            ushort ID = BitConverter.ToUInt16(packetBufferArraySegment.Array, packetBufferArraySegment.Offset + 2);
+            Packet test = new PlayerInfoReq();
+
+            test.DeserializeAll(packetBufferArraySegment.Array);
+
 
         }
 

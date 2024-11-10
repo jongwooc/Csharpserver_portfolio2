@@ -27,6 +27,17 @@ namespace dummyclient
             clientconnector.Init(endPoint, () => { return new GameSessionforClient(); });
 
 
+            Packet test = new PlayerInfoReq
+            {
+                _PlayerID = 5555,
+                _PlayerName = "테스트알파"
+            };
+
+            Console.WriteLine($"클라이언트 테스트 플레이어 아이디{((PlayerInfoReq)test)._PlayerID}");
+
+            Console.WriteLine($"클라이언트 테스트 플레이어 이름{((PlayerInfoReq)test)._PlayerName}");
+
+            test.Init();
 
             while (true)
             {

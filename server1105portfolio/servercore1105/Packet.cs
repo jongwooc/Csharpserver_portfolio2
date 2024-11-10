@@ -28,8 +28,10 @@ namespace servercore1105
         internal int _totalPacketArrayOffset = 2;
 
 
+        
+        public abstract void Init();
 
-        public abstract void SerializeAll();
+        public abstract byte[] SerializeAll();
 
         public abstract void DeserializeAll(byte[] Packet);
 
@@ -51,7 +53,7 @@ namespace servercore1105
             bool success = BitConverter.TryWriteBytes(_Span, packetdata);
             if (success)
             {
-                Offset += sizeof(ushort);
+                Offset += sizeof(short);
                 return Offset;
             }
             return 0;
@@ -62,7 +64,7 @@ namespace servercore1105
             bool success = BitConverter.TryWriteBytes(_Span, packetdata);
             if (success)
             {
-                Offset += sizeof(ushort);
+                Offset += sizeof(int);
                 return Offset;
             }
             return 0;
@@ -73,7 +75,7 @@ namespace servercore1105
             bool success = BitConverter.TryWriteBytes(_Span, packetdata);
             if (success)
             {
-                Offset += sizeof(ushort);
+                Offset += sizeof(float);
                 return Offset;
             }
             return 0;
@@ -84,7 +86,7 @@ namespace servercore1105
             bool success = BitConverter.TryWriteBytes(_Span, packetdata);
             if (success)
             {
-                Offset += sizeof(ushort);
+                Offset += sizeof(double);
                 return Offset;
             }
             return 0;
@@ -145,9 +147,10 @@ namespace servercore1105
         }
         internal string String_Deserialize(byte[] Packet, int Offset, int size)
         {
-            string data = Encoding.Default.GetString(Packet,Offset, size);
+            string data = Encoding.Unicode.GetString(Packet,Offset, size);
             return data;
         }
+
         #endregion
     }
 
