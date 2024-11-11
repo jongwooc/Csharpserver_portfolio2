@@ -27,10 +27,6 @@ namespace servercore1105
 
             _size += sizeof(ushort);
             _size += (ushort)Encoding.Unicode.GetByteCount(_PlayerName);
-
-            _packetID = (ushort)PacketID.PLAYERINFOREQ;
-
-
         }
 
 
@@ -64,22 +60,23 @@ namespace servercore1105
             _PlayerName = "직렬화작업 실패";
 
 
-            _size = Ushort_Deserialize(Packet, _tempPacketArrayOffset);
+            _size = ushort_Deserialize(Packet, _tempPacketArrayOffset);
             _tempPacketArrayOffset += sizeof(ushort);
             Console.WriteLine($"전체 사이즈는 {_size}입니다.");
 
-            _packetID = Ushort_Deserialize(Packet, _tempPacketArrayOffset);
+            _packetID = ushort_Deserialize(Packet, _tempPacketArrayOffset);
             _tempPacketArrayOffset += sizeof(ushort);
             Console.WriteLine($"패킷아이디는 {_packetID}입니다.");
 
-            _PlayerID = Int_Deserialize(Packet, _tempPacketArrayOffset);
+            _PlayerID = int_Deserialize(Packet, _tempPacketArrayOffset);
             _tempPacketArrayOffset += sizeof(int);
             Console.WriteLine($"플레이어 아이디는 {_PlayerID}입니다.");
 
             //스트링은 먼저 사이즈 정보의 오프셋을 수정해야한다.
-            int stringsize = Ushort_Deserialize(Packet, _tempPacketArrayOffset);
+            int stringsize = ushort_Deserialize(Packet, _tempPacketArrayOffset);
             _tempPacketArrayOffset += sizeof(ushort);
-            _PlayerName = String_Deserialize(Packet, _tempPacketArrayOffset, stringsize);
+            _PlayerName = string_Deserialize(Packet, _tempPacketArrayOffset, stringsize);
+            _tempPacketArrayOffset += stringsize;
             Console.WriteLine($"플레이어 이름은 {_PlayerName}입니다.");
         }
 

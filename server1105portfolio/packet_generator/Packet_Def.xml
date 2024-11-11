@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Packet_Def>
+  <packet name ="PlayerInfoReq">
+    <int name="playerID"/>
+    <string name ="PlayerName"/>
+  </packet>  
+</Packet_Def>

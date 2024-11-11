@@ -120,32 +120,32 @@ namespace servercore1105
 
 
         #region deserialize
-        internal ushort Ushort_Deserialize(byte[] Packet, int Offset)
+        internal ushort ushort_Deserialize(byte[] Packet, int Offset)
         {
             ushort data = BitConverter.ToUInt16(Packet, Offset);
             return data;
         }
-        internal short Short_Deserialize(byte[] Packet, int Offset)
+        internal short short_Deserialize(byte[] Packet, int Offset)
         {
             short data = BitConverter.ToInt16(Packet, Offset);
             return data;
         }
-        internal int Int_Deserialize(byte[] Packet, int Offset)
+        internal int int_Deserialize(byte[] Packet, int Offset)
         {
             int data = BitConverter.ToInt32(Packet, Offset);
             return data;
         }
-        internal float Float_Deserialize(byte[] Packet, int Offset)
+        internal float float_Deserialize(byte[] Packet, int Offset)
         {
             float data = BitConverter.ToSingle(Packet, Offset);
             return data;
         }
-        internal double Double_Deserialize(byte[] Packet, int Offset)
+        internal double double_Deserialize(byte[] Packet, int Offset)
         {
             double data = BitConverter.ToDouble(Packet, Offset);
             return data;
         }
-        internal string String_Deserialize(byte[] Packet, int Offset, int size)
+        internal string string_Deserialize(byte[] Packet, int Offset, int size)
         {
             string data = Encoding.Unicode.GetString(Packet,Offset, size);
             return data;
