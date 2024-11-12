@@ -3,5 +3,9 @@
   <packet name ="PlayerInfoReq">
     <int name="playerID"/>
     <string name ="PlayerName"/>
-  </packet>  
+  </packet>
+  <packet name ="PlayerOK">
+    <string name ="PlayerName"/>
+    <ushort name="movement"/>
+  </packet>
 </Packet_Def>

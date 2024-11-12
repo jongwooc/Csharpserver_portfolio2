@@ -7,9 +7,9 @@ namespace packet_generator
 {
     internal class Program
     {
-
-
-        static string generatedPackets;
+        static string generatedPackets = System.String.Empty;
+        static string finalPackets = System.String.Empty;
+        static string EnumList = System.String.Empty;
         static void Main(string[] args)
         {
             XmlReaderSettings settings = new XmlReaderSettings() { IgnoreComments = true, IgnoreWhitespace = true };
@@ -17,17 +17,19 @@ namespace packet_generator
             XmlReader xmlReader = XmlReader.Create("Packet_Def.xml", settings);
             xmlReader.MoveToContent();
 
-            generatedPackets += PacketFormat.Header;
 
             while (xmlReader.Read())
             {
                 if (xmlReader.Depth == 1 && xmlReader.NodeType == XmlNodeType.Element)
                     ParsePacket(xmlReader);
-
-
             }
 
-            File.WriteAllText("PacketProtocl.cs", generatedPackets);
+            finalPackets += PacketFormat.Header;
+            finalPackets += String.Format(PacketFormat.packetEnumList, EnumList);
+            finalPackets += generatedPackets;
+
+            finalPackets += "\r\n}";
+            File.WriteAllText("PacketProtocl.cs", finalPackets);
 
             xmlReader.Close();
 
@@ -36,6 +38,12 @@ namespace packet_generator
 
         private static void ParsePacket(XmlReader xmlReader)
         {
+            string DeclareVariables = System.String.Empty;
+            string InitVariables = System.String.Empty;
+            string FunctionSerialize = System.String.Empty;
+            string FunctionDeserialize = System.String.Empty;
+            PacketFormat.packetDeclareVariablesList.Clear();
+
             if (xmlReader.NodeType == XmlNodeType.EndElement)
             {
                 return;
@@ -49,8 +57,9 @@ namespace packet_generator
             PacketFormat.packetEnumListFormatList.Add(packetname);
 
 
-            generatedPackets += String.Format(PacketFormat.packetDeclare, PacketFormat.packetEnumListFormatList[0]);
-
+            generatedPackets += String.Format(PacketFormat.packetDeclare, packetname);
+            EnumList += packetname.ToUpper();
+            EnumList += ",\r\n\t\t";
 
             if (string.IsNullOrEmpty(packetname))
             {
@@ -59,10 +68,7 @@ namespace packet_generator
             }
 
             ParseMembers(xmlReader);
-            string DeclareVariables = System.String.Empty;
-            string InitVariables = System.String.Empty;
-            string FunctionSerialize = System.String.Empty;
-            string FunctionDeserialize = System.String.Empty;
+
             foreach ((string, string) _tuple in PacketFormat.packetDeclareVariablesList)
             {
                 DeclareVariables += String.Format(PacketFormat.packetDeclareVariablesFormat, _tuple.Item1,_tuple.Item2);
@@ -70,7 +76,6 @@ namespace packet_generator
                 if (_tuple.Item1 == "string")
                 {
                     InitVariables += String.Format(PacketFormat.packetInitFormatString, _tuple.Item2);
-
                 }
                 else
                 {
@@ -79,31 +84,20 @@ namespace packet_generator
                 
                 FunctionSerialize += String.Format(PacketFormat.packetFunctionSerializeFormat, _tuple.Item2);
                 FunctionDeserialize += String.Format(PacketFormat.packetFunctionDeserializeFormat, _tuple.Item1,_tuple.Item2);
-
             }
-
             generatedPackets += DeclareVariables;
             generatedPackets += PacketFormat.packetInit;
             generatedPackets += InitVariables;
             generatedPackets += String.Format(PacketFormat.packetFunction, FunctionSerialize, FunctionDeserialize);
-
-
-
-
-
-
         }
 
         private static void ParseMembers(XmlReader xmlReader)
         {
-
             string packetname = xmlReader["name"];
-
             int depth = xmlReader.Depth + 1;
 
             while (xmlReader.Read())
             {
-
                 if (xmlReader.Depth != depth)
                 {
                     break;
@@ -111,22 +105,14 @@ namespace packet_generator
 
                 string membertname = xmlReader["name"];
 
-
-
                 if (string.IsNullOrEmpty(packetname))
                 {
                     Console.WriteLine("there is no member with name");
                     return;
                 }
                 string memberType = xmlReader.Name.ToLower();
-
                 PacketFormat.packetDeclareVariablesList.Add((memberType, membertname));
-
-
             }
-
-
-
         }
     }
 }

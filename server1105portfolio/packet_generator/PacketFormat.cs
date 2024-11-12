@@ -53,6 +53,7 @@ namespace servercore1105
         public static string packetInitFormat = @"
             _size += sizeof({0});";
         public static string packetInitFormatString = @"
+            _size += sizeof(ushort);
             _size += (ushort)Encoding.Unicode.GetByteCount({0});";
 
 
@@ -99,20 +100,16 @@ namespace servercore1105
         }}
 
     }}
-}}
 ";
         public static string packetFunctionSerializeFormat = @"
             _totalPacketArrayOffset = Serialize({0}, _totalPacketArrayOffset);";
         public static string packetFunctionDeserializeFormat = @"
             _totalPacketArrayOffset = {0}_Deserialize({1}, _totalPacketArrayOffset);";
 
-        public static string packetEnumList = @"
-
-    public enum PacketID
+        public static string packetEnumList = @"    public enum PacketID
     {{
         {0}
     }}
-
 ";
         public static List<string?> packetEnumListFormatList = new List<string?>();
         public static string packetEnumListFormat;
