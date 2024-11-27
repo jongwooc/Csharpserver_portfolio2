@@ -97,8 +97,8 @@ namespace servercore1105
 
             Span<byte> size_Span = new Span<byte>(this._totalPacketArray, Offset, sizeof(ushort));
 
-            int _StringSizeInt = Encoding.Unicode.GetByteCount(packetdata);
-            bool success = BitConverter.TryWriteBytes(size_Span, (ushort)_StringSizeInt);
+            ushort _StringSizeInt = (ushort)Encoding.Unicode.GetByteCount(packetdata);
+            bool success = BitConverter.TryWriteBytes(size_Span, _StringSizeInt);
             Offset += sizeof(ushort);
 
             Span<byte> _Span = new Span<byte>(this._totalPacketArray, Offset, _StringSizeInt);
@@ -111,6 +111,26 @@ namespace servercore1105
             if (_StringSizeInt > 0)
             {
                 Offset += _StringSizeInt;
+                return Offset;
+            }
+            return 0;
+        }
+        public int Serialize(List<ushort> packetlist, int Offset)
+        {
+            int _oldOffset = Offset;
+            Span<byte> size_Span = new Span<byte>(this._totalPacketArray, Offset, sizeof(ushort));
+
+            ushort _listcount = (ushort)packetlist.Count;
+            bool success = BitConverter.TryWriteBytes(size_Span, _listcount);
+            Offset += sizeof(ushort);
+
+            foreach (ushort item in packetlist)
+            {
+                Offset = Serialize(item, Offset);
+            }
+
+            if ((Offset-_oldOffset) == ((_listcount+1)*sizeof(ushort)))
+            {
                 return Offset;
             }
             return 0;
