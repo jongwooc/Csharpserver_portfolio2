@@ -12,21 +12,23 @@ namespace servercore1105
     public abstract class Packet
     {
         //미리 세팅된 값들을 적어놓는다.
-        internal const int THEOROGICALOPTPACKETSIZE = 536;
-        internal const int USHORTSIZE = 2;
-        internal const int SHORTSIZE = 2;
-        internal const int INTSIZE = 4;
-        internal const int SINGLESIZE = 4;
-        internal const int DOUBLESIZE = 8;
-        internal const int ONEUTF16SIZE = 16;
+        public const int THEOROGICALOPTPACKETSIZE = 536;
+        public const int USHORTSIZE = 2;
+        public const int SHORTSIZE = 2;
+        public const int INTSIZE = 4;
+        public const int SINGLESIZE = 4;
+        public const int DOUBLESIZE = 8;
+        public const int ONEUTF16SIZE = 16;
 
         //전체 패킷의 0번자리는 전체 패킷의 사이즈이다. 따라서 사이즈와 패킷 아이디는 첫 4바이트에 항상 예약되어 있다.
-        internal ushort _size = 4;
-        internal ushort _packetID;
+        public ushort _size = 4;
+        public ushort _packetID;
 
         //임시 패킷을 만들고 전체 사이즈를 기록할 첫자리를 비워둔다
-        internal byte[] _totalPacketArray = new byte[THEOROGICALOPTPACKETSIZE];
-        internal int _totalPacketArrayOffset = 2;
+        public byte[] _totalPacketArray = new byte[THEOROGICALOPTPACKETSIZE];
+        public int _totalPacketArrayOffset = 2;
+
+        public ushort Protocol { get { return this._packetID; } }
 
 
 
@@ -37,7 +39,7 @@ namespace servercore1105
         public abstract void DeserializeAll(byte[] Packet);
 
         #region serialize
-        internal int Serialize(ushort packetdata, int Offset)
+        public int Serialize(ushort packetdata, int Offset)
         {
             Span<byte> _Span = new Span<byte>(this._totalPacketArray, Offset, sizeof(ushort));
             bool success = BitConverter.TryWriteBytes(_Span, packetdata);
@@ -48,7 +50,7 @@ namespace servercore1105
             }
             return 0;
         }
-        internal int Serialize(short packetdata, int Offset)
+        public int Serialize(short packetdata, int Offset)
         {
             Span<byte> _Span = new Span<byte>(this._totalPacketArray, Offset, sizeof(short));
             bool success = BitConverter.TryWriteBytes(_Span, packetdata);
@@ -59,7 +61,7 @@ namespace servercore1105
             }
             return 0;
         }
-        internal int Serialize(int packetdata, int Offset)
+        public int Serialize(int packetdata, int Offset)
         {
             Span<byte> _Span = new Span<byte>(this._totalPacketArray, Offset, sizeof(int));
             bool success = BitConverter.TryWriteBytes(_Span, packetdata);
@@ -70,7 +72,7 @@ namespace servercore1105
             }
             return 0;
         }
-        internal int Serialize(float packetdata, int Offset)
+        public int Serialize(float packetdata, int Offset)
         {
             Span<byte> _Span = new Span<byte>(this._totalPacketArray, Offset, sizeof(float));
             bool success = BitConverter.TryWriteBytes(_Span, packetdata);
@@ -81,7 +83,7 @@ namespace servercore1105
             }
             return 0;
         }
-        internal int Serialize(double packetdata, int Offset)
+        public int Serialize(double packetdata, int Offset)
         {
             Span<byte> _Span = new Span<byte>(this._totalPacketArray, Offset, sizeof(double));
             bool success = BitConverter.TryWriteBytes(_Span, packetdata);
@@ -92,7 +94,7 @@ namespace servercore1105
             }
             return 0;
         }
-        internal int Serialize(string packetdata, int Offset)
+        public int Serialize(string packetdata, int Offset)
         {
             //먼저 들어갈 스트링의 길이를 적는다. 나중에 파싱할 때 사이즈를 알아야하니까..
 
@@ -116,7 +118,7 @@ namespace servercore1105
             }
             return 0;
         }
-        internal int Serialize(List<ushort> packetlist, int Offset)
+        public int Serialize(List<ushort> packetlist, int Offset)
         {
             int _oldOffset = Offset;
             Span<byte> size_Span = new Span<byte>(this._totalPacketArray, Offset, sizeof(ushort));
@@ -136,7 +138,7 @@ namespace servercore1105
             }
             return 0;
         }
-        internal int Serialize(List<short> packetlist, int Offset)
+        public int Serialize(List<short> packetlist, int Offset)
         {
             int _oldOffset = Offset;
             Span<byte> size_Span = new Span<byte>(this._totalPacketArray, Offset, sizeof(ushort));
@@ -156,7 +158,7 @@ namespace servercore1105
             }
             return 0;
         }
-        internal int Serialize(List<int> packetlist, int Offset)
+        public int Serialize(List<int> packetlist, int Offset)
         {
             int _oldOffset = Offset;
             Span<byte> size_Span = new Span<byte>(this._totalPacketArray, Offset, sizeof(ushort));
@@ -176,7 +178,7 @@ namespace servercore1105
             }
             return 0;
         }
-        internal int Serialize(List<float> packetlist, int Offset)
+        public int Serialize(List<float> packetlist, int Offset)
         {
             int _oldOffset = Offset;
             Span<byte> size_Span = new Span<byte>(this._totalPacketArray, Offset, sizeof(ushort));
@@ -196,7 +198,7 @@ namespace servercore1105
             }
             return 0;
         }
-        internal int Serialize(List<double> packetlist, int Offset)
+        public int Serialize(List<double> packetlist, int Offset)
         {
             int _oldOffset = Offset;
             Span<byte> size_Span = new Span<byte>(this._totalPacketArray, Offset, sizeof(ushort));
@@ -216,7 +218,7 @@ namespace servercore1105
             }
             return 0;
         }
-        internal int Serialize(List<string> packetlist, int Offset)
+        public int Serialize(List<string> packetlist, int Offset)
         {
             int _oldOffset = Offset;
             int list_Size = 0;
@@ -254,38 +256,38 @@ namespace servercore1105
 
 
         #region deserialize
-        internal ushort ushort_Deserialize(byte[] Packet, int Offset)
+        public ushort ushort_Deserialize(byte[] Packet, int Offset)
         {
             ushort data = BitConverter.ToUInt16(Packet, Offset);
             return data;
         }
-        internal short short_Deserialize(byte[] Packet, int Offset)
+        public short short_Deserialize(byte[] Packet, int Offset)
         {
             short data = BitConverter.ToInt16(Packet, Offset);
             return data;
         }
-        internal int int_Deserialize(byte[] Packet, int Offset)
+        public int int_Deserialize(byte[] Packet, int Offset)
         {
             int data = BitConverter.ToInt32(Packet, Offset);
             return data;
         }
-        internal float float_Deserialize(byte[] Packet, int Offset)
+        public float float_Deserialize(byte[] Packet, int Offset)
         {
             float data = BitConverter.ToSingle(Packet, Offset);
             return data;
         }
-        internal double double_Deserialize(byte[] Packet, int Offset)
+        public double double_Deserialize(byte[] Packet, int Offset)
         {
             double data = BitConverter.ToDouble(Packet, Offset);
             return data;
         }
-        internal string string_Deserialize(byte[] Packet, int Offset, int size)
+        public string string_Deserialize(byte[] Packet, int Offset, int size)
         {
             string data = Encoding.Unicode.GetString(Packet, Offset, size);
             return data;
         }
         //리스트는 호출하는 함수에서 항목의 갯수를 ushort으로 항목의 숫자를 헤아린 뒤 항목의 숫자만큼 offset을 고쳐줘야한다.이후 내부에서는 임시 리스트를 만들어서 반환한다.
-        internal List<ushort> ushort_list_Deserialize(byte[] Packet, int Offset, int list_Size)
+        public List<ushort> ushort_list_Deserialize(byte[] Packet, int Offset, int list_Size)
         {
             List<ushort> _temp_List_Ushort = new List<ushort>();
             for (int i = 0; i < list_Size; i++)
@@ -295,7 +297,7 @@ namespace servercore1105
             }
             return _temp_List_Ushort;
         }
-        internal List<short> short_list_Deserialize(byte[] Packet, int Offset, int list_Size)
+        public List<short> short_list_Deserialize(byte[] Packet, int Offset, int list_Size)
         {
             List<short> _temp_List_Short = new List<short>();
             for (int i = 0; i < list_Size; i++)
@@ -305,7 +307,7 @@ namespace servercore1105
             }
             return _temp_List_Short;
         }
-        internal List<int> int_list_Deserialize(byte[] Packet, int Offset, int list_Size)
+        public List<int> int_list_Deserialize(byte[] Packet, int Offset, int list_Size)
         {
             List<int> _temp_List_Int = new List<int>();
             for (int i = 0; i < list_Size; i++)
@@ -315,7 +317,7 @@ namespace servercore1105
             }
             return _temp_List_Int;
         }
-        internal List<float> float_list_Deserialize(byte[] Packet, int Offset, int list_Size)
+        public List<float> float_list_Deserialize(byte[] Packet, int Offset, int list_Size)
         {
             List<float> _temp_List_Float = new List<float>();
             for (int i = 0; i < list_Size; i++)
@@ -325,7 +327,7 @@ namespace servercore1105
             }
             return _temp_List_Float;
         }
-        internal List<double> list_Deserialize(byte[] Packet, int Offset, int list_Size)
+        public List<double> list_Deserialize(byte[] Packet, int Offset, int list_Size)
         {
             List<double> _temp_List_Double = new List<double>();
             for (int i = 0; i < list_Size; i++)
@@ -337,7 +339,7 @@ namespace servercore1105
         }
 
         //리스트 스트링은 항목 갯수와 다음에 있는 전체 사이즈를 호출하는 함수측에서 처리해줘야 한다.
-        internal List<string> string_list_Deserialize(byte[] Packet, int Offset, int list_Size)
+        public List<string> string_list_Deserialize(byte[] Packet, int Offset, int list_Size)
         {
             List<string> _temp_List_String = new List<string>();
             for (int i = 0; i < list_Size; i++)

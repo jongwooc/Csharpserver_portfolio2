@@ -67,8 +67,12 @@ namespace servercore1105
             Console.WriteLine($"패킷아이디는 {_packetID}입니다.");
 
             
-            _totalPacketArrayOffset = int_Deserialize(playerID, _totalPacketArrayOffset);
-            _totalPacketArrayOffset = string_Deserialize(PlayerName, _totalPacketArrayOffset);
+            playerID = int_Deserialize(Packet, _totalPacketArrayOffset);
+            _tempPacketArrayOffset += sizeof(int);
+            int stringsize = ushort_Deserialize(Packet, _tempPacketArrayOffset);
+            _tempPacketArrayOffset += sizeof(ushort);
+            PlayerName = string_Deserialize(Packet, _tempPacketArrayOffset, stringsize);
+            _tempPacketArrayOffset += stringsize;
         }
 
     }
@@ -123,8 +127,12 @@ namespace servercore1105
             Console.WriteLine($"패킷아이디는 {_packetID}입니다.");
 
             
-            _totalPacketArrayOffset = string_Deserialize(PlayerName, _totalPacketArrayOffset);
-            _totalPacketArrayOffset = ushort_Deserialize(movement, _totalPacketArrayOffset);
+            int stringsize = ushort_Deserialize(Packet, _tempPacketArrayOffset);
+            _tempPacketArrayOffset += sizeof(ushort);
+            PlayerName = string_Deserialize(Packet, _tempPacketArrayOffset, stringsize);
+            _tempPacketArrayOffset += stringsize;
+            movement = ushort_Deserialize(Packet, _totalPacketArrayOffset);
+            _tempPacketArrayOffset += sizeof(ushort);
         }
 
     }

@@ -104,7 +104,13 @@ namespace servercore1105
         public static string packetFunctionSerializeFormat = @"
             _totalPacketArrayOffset = Serialize({0}, _totalPacketArrayOffset);";
         public static string packetFunctionDeserializeFormat = @"
-            _totalPacketArrayOffset = {0}_Deserialize({1}, _totalPacketArrayOffset);";
+            {1} = {0}_Deserialize(Packet, _totalPacketArrayOffset);
+            _tempPacketArrayOffset += sizeof({0});";
+        public static string packetStringDeserializeFormat = @"
+            int stringsize = ushort_Deserialize(Packet, _tempPacketArrayOffset);
+            _tempPacketArrayOffset += sizeof(ushort);
+            {0} = string_Deserialize(Packet, _tempPacketArrayOffset, stringsize);
+            _tempPacketArrayOffset += stringsize;";
 
         public static string packetEnumList = @"    public enum PacketID
     {{

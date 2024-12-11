@@ -29,7 +29,7 @@ namespace packet_generator
             finalPackets += generatedPackets;
 
             finalPackets += "\r\n}";
-            File.WriteAllText("PacketProtocl.cs", finalPackets);
+            File.WriteAllText("PacketProtocol.cs", finalPackets);
 
             xmlReader.Close();
 
@@ -83,7 +83,15 @@ namespace packet_generator
                 }
                 
                 FunctionSerialize += String.Format(PacketFormat.packetFunctionSerializeFormat, _tuple.Item2);
-                FunctionDeserialize += String.Format(PacketFormat.packetFunctionDeserializeFormat, _tuple.Item1,_tuple.Item2);
+
+                if (_tuple.Item1 == "string")
+                {
+                    FunctionDeserialize += String.Format(PacketFormat.packetStringDeserializeFormat, _tuple.Item2);
+                }
+                else
+                {
+                    FunctionDeserialize += String.Format(PacketFormat.packetFunctionDeserializeFormat, _tuple.Item1, _tuple.Item2);
+                }
             }
             generatedPackets += DeclareVariables;
             generatedPackets += PacketFormat.packetInit;

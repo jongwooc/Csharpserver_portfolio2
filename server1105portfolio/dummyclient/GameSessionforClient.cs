@@ -28,7 +28,7 @@ namespace dummyclient
 
             test.Init();
 
-            byte[] test222 = test.SerializeAll();
+            //byte[] test222 = test.SerializeAll();
 
             //ArraySegment<byte> openSegment = SendBufferHelper.Open(576);
             /*
