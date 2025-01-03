@@ -28,8 +28,10 @@ namespace servercore1105
         public byte[] _totalPacketArray = new byte[THEOROGICALOPTPACKETSIZE];
         public int _totalPacketArrayOffset = 2;
 
-        public ushort Protocol { get { return this._packetID; } }
 
+
+        public ushort CheckSize { get { return this._size; } }
+        public PacketID Verify { get { return (PacketID)this._packetID; } }
 
 
         public abstract void Init();
